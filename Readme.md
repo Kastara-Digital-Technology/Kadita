@@ -9,7 +9,19 @@
 An experimental to make a simplest way to build your project with C++ language
 <br/>
 
+## Introduction
 ## Why kadita iot?
+## Example
+
+<div style="display: flex;">
+  <div style="flex: 50%; padding: 0 15px;">
+    <a href="https://bengkelti.com/kadita-docs">
+  <img width="200" src="https://github.com/Kastara-Digital-Technology/assets/raw/main/snippets/kaditaBefore.png" alt=""></a>
+  </div>
+  <div style="flex: 50%; padding: 0 15px;">
+   <img width="200" src="https://github.com/Kastara-Digital-Technology/assets/raw/main/snippets/kaditaAfter.png" alt=""></a>
+  </div>
+</div>
 
 <br>
 <div align="center">
