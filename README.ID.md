@@ -8,7 +8,7 @@
 [English](README.md) | [Bahasa Indonesia](README.ID.md)
 
 
-# Kadita IoT 
+# Kadita IoT
 An experimental to make a simplest way to build your project with C++ language
 <br/>
 
