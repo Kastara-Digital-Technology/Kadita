@@ -8,10 +8,10 @@
 An experimental to make a simplest way to build your project with C++ language.
 <br/>
 
-## Pengenalan
-## Mengapa Kadita IoT?
-## Contoh Penggunaan Kadita - IoT
-| Sebelum                                                                                                                 | Sesudah                                                                                                                |
+## Introduction
+## Why Kadita IoT?
+## Example Use Kadita - IoT
+| Before                                                                                                                  | After                                                                                                                  |
 |-------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------|
 | <img width="100%" src="https://github.com/Kastara-Digital-Technology/assets/raw/main/snippets/kaditaBefore.png" alt=""> | <img width="100%" src="https://github.com/Kastara-Digital-Technology/assets/raw/main/snippets/kaditaAfter.png" alt=""> | Row 1, Col 3 |
 
