@@ -8,7 +8,6 @@
 An experimental to make a simplest way to build your project with C++ language.
 <br/>
 
-## Introduction
 # Selamat Datang di KADITA: Framework Computer Vision
 
 KADITA adalah sebuah framework Computer Vision yang kuat dan serbaguna yang dirancang untuk membantu Anda dalam pengembangan aplikasi yang melibatkan analisis dan pemrosesan gambar. Framework ini menawarkan berbagai fitur dan alat untuk memfasilitasi tugas-tugas Computer Vision, termasuk:
@@ -27,7 +26,25 @@ KADITA adalah sebuah framework Computer Vision yang kuat dan serbaguna yang dira
 
 KADITA didukung oleh komunitas yang aktif dan berkembang pesat, dengan dokumentasi yang kaya dan berbagai contoh aplikasi. Kami berharap bahwa framework ini akan membantu Anda dalam pengembangan proyek-proyek Computer Vision Anda.
 
-## Why Kadita IoT?
+## Why Kadita CV?
+
+- **Kemudahan Penggunaan:** KADITA CV didesain untuk mudah digunakan. Dengan dokumentasi yang lengkap dan contoh-contoh yang disediakan, Anda dapat memulai dengan cepat dalam mengembangkan solusi Computer Vision.
+
+- **Kekuatan Deep Learning:** Framework ini mengintegrasikan kekuatan deep learning untuk tugas-tugas seperti deteksi objek, pengenalan wajah, dan estimasi pose. Anda dapat mengakses jaringan saraf terkini untuk mencapai akurasi yang tinggi dalam aplikasi Anda.
+
+- **Kemampuan Deteksi Wajah yang Kuat:** KADITA CV memiliki kemampuan deteksi wajah yang handal, yang berguna dalam berbagai aplikasi, termasuk pengenalan wajah dan analisis ekspresi wajah.
+
+- **Dukungan Komunitas:** Framework ini didukung oleh komunitas yang aktif, yang berarti Anda dapat memperoleh dukungan dan masukan dari pengembang lainnya.
+
+- **Kustomisasi yang Fleksibel:** Anda dapat menyesuaikan dan mengkonfigurasi KADITA CV sesuai dengan kebutuhan proyek Anda. Framework ini memberi Anda fleksibilitas dalam penggunaan model-model yang telah tersedia atau membuat model Anda sendiri.
+
+- **Performa Cepat:** KADITA CV dirancang dengan performa tinggi dalam pikiran, memungkinkan Anda untuk menjalankan tugas-tugas Computer Vision dalam waktu nyata atau mendekati waktu nyata.
+
+- **Kontinuitas Perkembangan:** Framework ini terus berkembang dan diperbarui secara berkala dengan penambahan fitur-fitur baru dan peningkatan kinerja.
+
+Dengan mempertimbangkan alasan-alasan di atas, KADITA CV adalah pilihan yang kuat untuk proyek-proyek Computer Vision Anda. Kami berharap framework ini dapat membantu Anda mencapai kesuksesan dalam pengembangan aplikasi dan solusi visual Anda.
+
+
 ## Example Use Kadita - IoT
 | Before                                                                                                                  | After                                                                                                                  |
 |-------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------|
