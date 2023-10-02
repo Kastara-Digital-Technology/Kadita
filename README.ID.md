@@ -5,16 +5,20 @@
 
 [English](README.md) | [Bahasa Indonesia](README.ID.md)
 # Kadita IoT
-An experimental to make a simplest way to build your project with C++ language.
+Sebuah eksperimen untuk memudahkan invididu dalam membuat project IoT dengan bahasa pemrograman C++.
+
 <br/>
 
 ## Pengenalan
+
 ## Mengapa Kadita IoT?
 ## Contoh Penggunaan Kadita - IoT
 | Before                                                                                                                  | Sesudah                                                                                                                |
 |-------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------|
 | <img width="100%" src="https://github.com/Kastara-Digital-Technology/assets/raw/main/snippets/kaditaBefore.png" alt=""> | <img width="100%" src="https://github.com/Kastara-Digital-Technology/assets/raw/main/snippets/kaditaAfter.png" alt=""> | Row 1, Col 3 |
 
+## Kadita Goals
+## 
 <br>
 
 <a href="https://github.com/Kastara-Digital-Technology" style="text-decoration:none;">
