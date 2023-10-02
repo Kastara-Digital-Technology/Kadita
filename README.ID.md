@@ -6,6 +6,12 @@
 <br/>
 
 [English](README.md) | [Bahasa Indonesia](README.ID.md)
+
+<div align="center">
+
+    Selamat Datang di KADITA IoT: Framework IDE Integrated with IoT
+
+</div><br/>
 # Kadita IoT
 Sebuah eksperimen untuk memudahkan invididu dalam membuat project IoT dengan bahasa pemrograman C++.
 
