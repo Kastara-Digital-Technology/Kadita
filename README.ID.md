@@ -1,7 +1,8 @@
 <!--suppress ALL -->
+<br/>
 <div align="center">
     <a href="https://bengkelti.com/kadita-docs">
-    <img width="200" src="https://github.com/Kastara-Digital-Technology/assets/raw/main/logo/iotLogo.png" alt=""></a>
+    <img width="200" src="https://github.com/Kastara-Digital-Technology/assets/raw/main/logo/V2/iotColorLogo.png" alt=""></a>
 
 [English](README.md) | [Bahasa Indonesia](README.ID.md)
 # Kadita IoT
