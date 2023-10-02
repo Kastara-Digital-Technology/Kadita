@@ -9,6 +9,24 @@ An experimental to make a simplest way to build your project with C++ language.
 <br/>
 
 ## Introduction
+# Selamat Datang di KADITA: Framework Computer Vision
+
+KADITA adalah sebuah framework Computer Vision yang kuat dan serbaguna yang dirancang untuk membantu Anda dalam pengembangan aplikasi yang melibatkan analisis dan pemrosesan gambar. Framework ini menawarkan berbagai fitur dan alat untuk memfasilitasi tugas-tugas Computer Vision, termasuk:
+
+- **Deteksi Objek:** KADITA mendukung deteksi objek dalam gambar dan video, memungkinkan Anda untuk mengidentifikasi dan melacak objek dengan mudah.
+
+- **Pengenalan Wajah:** Framework ini memiliki kemampuan pengenalan wajah yang kuat, sehingga Anda dapat mengimplementasikan solusi pengenalan wajah dengan mudah.
+
+- **Segmentasi Gambar:** KADITA dapat digunakan untuk melakukan segmentasi gambar, yang berguna dalam berbagai aplikasi, termasuk segmentasi objek dalam gambar medis.
+
+- **Estimasi Pose:** Anda dapat menggunakan framework ini untuk mengestimasi pose objek atau manusia dalam gambar atau video.
+
+- **Pengolahan Citra:** Framework ini dilengkapi dengan berbagai algoritma pengolahan citra, termasuk peningkatan kualitas gambar dan transformasi.
+
+- **Kompatibilitas Kamera:** KADITA mendukung berbagai jenis kamera dan sumber gambar, memungkinkan Anda untuk mengintegrasikan solusi Computer Vision dengan perangkat keras yang berbeda.
+
+KADITA didukung oleh komunitas yang aktif dan berkembang pesat, dengan dokumentasi yang kaya dan berbagai contoh aplikasi. Kami berharap bahwa framework ini akan membantu Anda dalam pengembangan proyek-proyek Computer Vision Anda.
+
 ## Why Kadita IoT?
 ## Example Use Kadita - IoT
 | Before                                                                                                                  | After                                                                                                                  |
