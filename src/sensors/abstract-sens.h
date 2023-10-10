@@ -11,7 +11,7 @@
 #define ABSTRACT_SENS_H
 
 #include "Arduino.h"
-#include "sensor-module.h"
+#include "base/sensor-module.h"
 
 class Abstract : public BaseSens {
 private:
@@ -21,8 +21,6 @@ private:
 #else
     uint32_t sensTimer[1];
 #endif
-
-    bool isCalibrate;
     uint8_t sensorPin;
 #if defined(EXTENDED_FUNCTION_VTABLE)
     void (*thisCallbackFunc)() = nullptr;
@@ -30,7 +28,7 @@ private:
 
 public:
     Abstract();
-    explicit Abstract(uint8_t _pin, bool enableCalibrate = false);
+    explicit Abstract(uint8_t _pin);
     ~Abstract();
     void init() override;
     void update() override;

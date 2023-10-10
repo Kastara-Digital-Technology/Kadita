@@ -1,40 +1,44 @@
 /*
- *  abstract-sens.cpp
+ *  aht-sens.cpp
  *
- *  abstract sensor c
+ *  aht sensor c
  *  Created on: 2023. 4. 3
  */
 
-#include "abstract-sens.h"
+#include "aht-sens.h"
 #include "Arduino.h"
 
-Abstract::Abstract()
-        : isCalibrate(false), sensorPin(A0) {
+AHTSens::AHTSens()
+        : sensorPin(A0) {
 }
 
-Abstract::Abstract(uint8_t _pin, bool enableCalibrate) {
+AHTSens::AHTSens(uint8_t _pin) {
     this->sensorPin = _pin;
-    isCalibrate = enableCalibrate;
 }
 
-Abstract::~Abstract() = default;
+AHTSens::~AHTSens() = default;
 
-void Abstract::init() {
-    pinMode(sensorPin, INPUT);
-}
-
-void Abstract::update() {
-    if (millis() - sensTimer[0] >= 500) {
-        if (!isCalibrate) {
-            thisValue = analogRead(sensorPin);
-            thisValue *= (5.0 / 1023.0);
+void AHTSens::init() {
+    thisClass = new Adafruit_AHTX0;
+    if (!(*thisClass).begin())
+        while (1) {
+            delay(10);
+            break;
         }
+}
+
+void AHTSens::update() {
+    if (millis() - sensTimer[0] >= 500) {
+        sensors_event_t dataBuffer[2];
+        (*thisClass).getEvent(&dataBuffer[1], &dataBuffer[0]);
+        thisValue[0] = dataBuffer[0].temperature;
+        thisValue[1] = dataBuffer[1].relative_humidity;
         sensTimer[0] = millis();
     }
 }
 
 #if defined(EXTENDED_FUNCTION_VTABLE)
-void Abstract::debug() {
+void AHTSens::debug() {
     if (millis() - sensTimer[1] >= 500) {
         if (isCalibrate) return;
         Serial.print("| thisValueRaw: ");
@@ -44,7 +48,7 @@ void Abstract::debug() {
     }
 }
 
-void Abstract::calibrate() {
+void AHTSens::calibrate() {
     if (millis() - sensTimer[2] >= 500) {
         if (!isCalibrate) return;
         Serial.print("| arrTemplateValueRaw: ");
@@ -61,32 +65,31 @@ void Abstract::calibrate() {
 }
 #endif
 
-void Abstract::getValue(float *output) {
-    *output = thisValue;
-}
-
-void Abstract::getValue(int *output) {
-}
-
-void Abstract::getValue(char *output) {
+void AHTSens::getValue(float *output) {
+    output[0] = thisValue[0];
+    output[1] = thisValue[1];
 }
 
 #if defined(EXTENDED_FUNCTION_VTABLE)
-void Abstract::setCallBack(void (*callbackFunc)(void)) {
+void AHTSens::setCallBack(void (*callbackFunc)(void)) {
     thisCallbackFunc = callbackFunc;
 }
 
-void Abstract::count() {
+void AHTSens::count() {
 }
 
-void Abstract::reset() {
+void AHTSens::reset() {
 }
 #endif
 
-float Abstract::getValue() const {
-    return thisValue;
+float AHTSens::getValueTemperature() const {
+    return thisValue[0];
 }
 
-void Abstract::setPins(uint8_t _pin) {
+float AHTSens::getValueHumidity() const {
+    return thisValue[1];
+}
+
+void AHTSens::setPins(uint8_t _pin) {
     this->sensorPin = _pin;
 }
