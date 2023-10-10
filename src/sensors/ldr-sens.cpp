@@ -1,42 +1,39 @@
 /*
- *  dht-sens.cpp
+ *  ldr-sens.cpp
  *
- *  dht sensor c
+ *  ldr sensor c
  *  Created on: 2023. 4. 3
  */
 
-#include "dht-sens.h"
+#include "ldr-sens.h"
 #include "Arduino.h"
 
-DHTSens::DHTSens()
-        : isCalibrate(false), sensorPin(A0) {
+LDRSens::LDRSens()
+        : sensorPin(A0), vref(5), resolution(10) {
 }
 
-DHTSens::DHTSens(uint8_t _pin, uint8_t _type, bool enableCalibrate) {
+LDRSens::LDRSens(uint8_t _pin, uint8_t _vref, uint8_t _resolution) {
     this->sensorPin = _pin;
-    this->type = _type;
-    isCalibrate = enableCalibrate;
+    this->vref = _vref;
+    this->resolution = _resolution;
 }
 
-DHTSens::~DHTSens() = default;
+LDRSens::~LDRSens() = default;
 
-void DHTSens::init() {
-    thisClass = new DHT(sensorPin, type);
-    (*thisClass).begin();
+void LDRSens::init() {
+    pinMode(sensorPin, INPUT);
 }
 
-void DHTSens::update() {
+void LDRSens::update() {
     if (millis() - sensTimer[0] >= 500) {
-        if (!isCalibrate) {
-            thisValue[0] = (*thisClass).readTemperature();
-            thisValue[1] = (*thisClass).readHumidity();
-        }
+        thisValue = analogRead(sensorPin);
+        thisValue *= (vref / (pow(2, resolution) - 1));
         sensTimer[0] = millis();
     }
 }
 
 #if defined(EXTENDED_FUNCTION_VTABLE)
-void DHTSens::debug() {
+void LDRSens::debug() {
     if (millis() - sensTimer[1] >= 500) {
         if (isCalibrate) return;
         Serial.print("| thisValueRaw: ");
@@ -46,7 +43,7 @@ void DHTSens::debug() {
     }
 }
 
-void DHTSens::calibrate() {
+void LDRSens::calibrate() {
     if (millis() - sensTimer[2] >= 500) {
         if (!isCalibrate) return;
         Serial.print("| arrTemplateValueRaw: ");
@@ -63,31 +60,32 @@ void DHTSens::calibrate() {
 }
 #endif
 
-void DHTSens::getValue(float *output) {
-    output[0] = thisValue[0];
-    output[1] = thisValue[1];
+void LDRSens::getValue(float *output) {
+    *output = thisValue;
+}
+
+void LDRSens::getValue(int *output) {
+}
+
+void LDRSens::getValue(char *output) {
 }
 
 #if defined(EXTENDED_FUNCTION_VTABLE)
-void DHTSens::setCallBack(void (*callbackFunc)(void)) {
+void LDRSens::setCallBack(void (*callbackFunc)(void)) {
     thisCallbackFunc = callbackFunc;
 }
 
-void DHTSens::count() {
+void LDRSens::count() {
 }
 
-void DHTSens::reset() {
+void LDRSens::reset() {
 }
 #endif
 
-float DHTSens::getValueTemperature() const {
-    return thisValue[0];
+float LDRSens::getValue() const {
+    return thisValue;
 }
 
-float DHTSens::getValueHumidity() const {
-    return thisValue[1];
-}
-
-void DHTSens::setPins(uint8_t _pin) {
+void LDRSens::setPins(uint8_t _pin) {
     this->sensorPin = _pin;
 }

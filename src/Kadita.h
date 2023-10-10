@@ -1,5 +1,5 @@
 /*
- *  KaditaIoT.h
+ *  Kadita.h
  *
  *  Kadita lib header
  *  Created on: 2023. 4. 3
@@ -13,15 +13,17 @@
 #include "Arduino.h"
 
 // custom external sensor: will be updated soon
-#include "sensor-module.h"
-#include "abstract-sens.h"
-#include "dht-sens.h"
-#include "aht-sens.h"
+#include "sensors/base/sensor-module.h"
+#include "sensors/abstract-sens.h"
+#include "sensors/dht-sens.h"
+#include "sensors/aht-sens.h"
+#include "sensors/ldr-sens.h"
 
-#include "input-module.h"
-#include "output-module.h"
+// modules
+#include "modules/io/input-module.h"
+#include "modules/io/output-module.h"
 
-#include "timer-duration.h"
-#include "timer-task.h"
+#include "modules/time/timer-duration.h"
+#include "modules/time/timer-task.h"
 
 #endif
