@@ -12,9 +12,19 @@ An experimental to make a simplest way to build your project with C++ language.
 
 ## Introduction
 
-## Why Kadita IoT 
-
+## Why Kadita IoT
 ## Example Use Kadita - IoT
+<div align="left">
+
+### Single Sensor
+### Multiple Sensor 
+### I2C Sensor
+### Communication
+#### Serial Communication
+#### I2C Communication
+
+</div>
+
 | Before                                                                                                                  | After                                                                                                                  |
 |-------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------|
 | <img width="100%" src="https://github.com/Kastara-Digital-Technology/assets/raw/main/snippets/kaditaBefore.png" alt=""> | <img width="100%" src="https://github.com/Kastara-Digital-Technology/assets/raw/main/snippets/kaditaAfter.png" alt=""> | Row 1, Col 3 |
