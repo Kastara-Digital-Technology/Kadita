@@ -1,7 +1,7 @@
 /*
  *  Kadita.h
  *
- *  Kadita lib header
+ *  Kadita index lib
  *  Created on: 2023. 4. 3
  */
 
@@ -15,20 +15,29 @@
 // custom external sensor: will be updated soon
 #include "sensors/base/sensor-module.h"
 #include "sensors/abstract-sens.h"
-#include "sensors/dht-sens.h"
 #include "sensors/aht-sens.h"
+#include "sensors/dht-sens.h"
+#include "sensors/hx711-sens.h"
 #include "sensors/ldr-sens.h"
 
 // modules
+#include "modules/communication/wired/i2c/i2c-scanner.h"
+#include "modules/communication/wired/i2c/io-expander.h"
+
+#include "modules/communication/wired/serial/soft-serial.h"
+#include "modules/communication/wired/serial/hard-serial.h"
+
+#include "modules/communication/wireless/lora/lora-com.h"
+
+#include "modules/driver/bts7960/bts7960.h"
+
 #include "modules/io/input-module.h"
 #include "modules/io/output-module.h"
 
 #include "modules/time/timer-duration.h"
 #include "modules/time/timer-task.h"
 
-#include "modules/communication/wired/serial/soft-serial.h"
-#include "modules/communication/wired/serial/hard-serial.h"
-#include "modules/communication/wired/i2c/i2c-scanner.h"
-#include "modules/communication/wired/i2c/io-expander.h"
+// external lib
+#include "LiquidCrystal_I2C.h"
 
 #endif
