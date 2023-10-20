@@ -15,16 +15,14 @@
 
 class Abstract : public BaseSens {
 private:
-    float thisValue;
-#if defined(EXTENDED_FUNCTION_VTABLE)
-    uint32_t sensTimer[3];
-#else
-    uint32_t sensTimer[1];
-#endif
+    /*variables*/
+    void *sensorClass;
+    float sensorValue;
     uint8_t sensorPin;
-#if defined(EXTENDED_FUNCTION_VTABLE)
-    void (*thisCallbackFunc)() = nullptr;
-#endif
+    uint32_t sensorTimer;
+
+    /*optional object*/
+    void (*sensorCallbackFunc)();
 
 public:
     Abstract();
@@ -32,19 +30,8 @@ public:
     ~Abstract();
     void init() override;
     void update() override;
-#if defined(EXTENDED_FUNCTION_VTABLE)
-    void debug() override;
-    void calibrate() override;
-#endif
     void getValue(float *output) override;
-    void getValue(int *output) override;
-    void getValue(char *output) override;
-#if defined(EXTENDED_FUNCTION_VTABLE)
-    void setCallBack(void (*callbackFunc)(void)) override;
-    void count() override;
-    void reset() override;
-#endif
-    float getValue() const;
+    float getValueAbstract() const;
     void setPins(uint8_t _pin);
 };
 

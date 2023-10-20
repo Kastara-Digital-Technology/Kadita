@@ -20,50 +20,30 @@ SensorModule::~SensorModule() {
     }
 }
 
-void SensorModule::init(void (*initialize)(void)) {
-    if (initialize != nullptr) initialize();
+void SensorModule::init(void (*initializeCallback)(void)) {
+    if (initializeCallback != nullptr) initializeCallback();
     if (base == nullptr) return;
     for (uint8_t i = 0; i < len; i++) {
         base[i]->init();
     }
 }
 
-void SensorModule::update(void (*update)(void)) {
-    if (update != nullptr) update();
+void SensorModule::update(void (*updateCallback)(void)) {
+    if (updateCallback != nullptr) updateCallback();
     if (base == nullptr) return;
     for (uint8_t i = 0; i < len; i++) {
         base[i]->update();
     }
 }
 
-void SensorModule::debug(int _index) {
-#if defined(EXTENDED_FUNCTION_VTABLE)
-    if (base == nullptr) return;
-    if (_index != -1) base[_index]->debug();
-    else {
-        for (uint8_t i = 0; i < len; i++) {
-            base[i]->debug();
-        }
-    }
-#endif
-}
-
-void SensorModule::loop(void (*loop)(void)) {
-    if (loop == nullptr) return;
-    loop();
-}
-
 void SensorModule::addModule(BaseSens *sensModule) {
-    BaseSens **newBase = (BaseSens **) realloc(base, (len + 1) * sizeof(BaseSens *));  // Increase length by 1
+    BaseSens **newBase = (BaseSens **) realloc(base, (len + 1) * sizeof(BaseSens *));  // increase length by 1
     if (newBase == nullptr) {
-        int count = 0;
-        while (count < 99) {
-            Serial.println("Memory Allocation Failed !");
-            count++;
-        }
+        Serial.println("Memory Allocation Failed !");
+        return;
     }
     base = newBase;
-    base[len] = sensModule;  // Assign to correct index
+    base[len] = sensModule;  // assign to correct index
     len++;
 }
 
@@ -80,7 +60,11 @@ void SensorModule::removeModule(uint8_t index) {
     }
 }
 
-BaseSens *SensorModule::getModule(uint8_t index) {
+BaseSens &SensorModule::getModule(uint8_t index) {
+    return *(base[index]);
+}
+
+BaseSens *SensorModule::getModulePtr(uint8_t index) {
     if (base == nullptr || index >= len) return nullptr;
     return base[index];
 }
