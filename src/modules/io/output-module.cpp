@@ -57,6 +57,22 @@ void DigitalOut::toggle() {
     set(!_state);
 }
 
+void DigitalOut::toggleInit(unsigned long delay_time, int num) {
+    for (int i = 0; i < num; i++) {
+        on();
+        delay(delay_time);
+        off();
+        delay(delay_time);
+    }
+}
+
+void DigitalOut::toggleAsync(unsigned long delay_time) {
+    if (millis() - _toggleTime >= delay_time) {
+        set(!_state);
+        _toggleTime = millis();
+    }
+}
+
 void DigitalOut::onDelay(unsigned long delay_time) {
     _onDelayTime = delay_time;
     _onDelayStart = millis();
