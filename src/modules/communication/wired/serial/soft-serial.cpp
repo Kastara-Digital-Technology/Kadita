@@ -31,11 +31,27 @@ void SoftSerial::clearData() {
     dataSend = "";
 }
 
-void SoftSerial::sendData(uint32_t _time) {
+void SoftSerial::sendData() {
+    serialPtr->println(dataSend);
+}
+
+void SoftSerial::sendDataCb(void (*onReceive)()) {
+    serialPtr->println(dataSend);
+    onReceive();
+}
+
+void SoftSerial::sendDataAsync(uint32_t _time) {
     if (millis() - sendTime >= _time) {
         sendTime = millis();
         serialPtr->println(dataSend);
-        // Serial.println(dataSend);
+    }
+}
+
+void SoftSerial::sendDataAsyncCb(uint32_t _time, void (*onReceive)()) {
+    if (millis() - sendTime >= _time) {
+        sendTime = millis();
+        serialPtr->println(dataSend);
+        onReceive();
     }
 }
 
@@ -52,7 +68,9 @@ void SoftSerial::receive(void (*onReceive)(String)) {
             }
         }
         rxBuffer[rxBufferPtr] = 0;
-        onReceive(String(rxBuffer));
+        String dataCb = String(rxBuffer);
+        dataCb.replace("\n", "");
+        onReceive(dataCb);
     }
 }
 
