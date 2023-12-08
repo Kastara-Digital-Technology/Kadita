@@ -1,5 +1,5 @@
 /*
- *  Keed6ChannelExt.h
+ *  Keed3ChannelExt.h
  *
  *  Kastara Electronics Embedded Development
  *  Created on: 2023. 4. 3
@@ -7,12 +7,12 @@
 
 #pragma once
 
-#ifndef KEED_6_CHANNEL_EXT_H
-#define KEED_6_CHANNEL_EXT_H
+#ifndef KEED_3_CHANNEL_EXT_H
+#define KEED_3_CHANNEL_EXT_H
 
-#include "KeedBase.h"
+#include "../KeedBase.h"
 
-class Keed6ChannelExt : public KeedBase {
+class Keed3ChannelExt : public KeedBase {
 private:
     IOExpander **ioBase;
     uint8_t ioNum;
@@ -23,8 +23,8 @@ private:
     interrupt_t isr;
     configuration_t cfg;
 
-    void (Keed6ChannelExt::*taskTemp)();
-    void (Keed6ChannelExt::*sequences[4])();
+    void (Keed3ChannelExt::*taskTemp)();
+    void (Keed3ChannelExt::*sequences[4])();
 
 protected:
     void sleep(uint32_t _delay);
@@ -32,11 +32,13 @@ protected:
     void snake(uint32_t _delay);
     void snakeReverse(uint32_t _delay);
     void set(uint8_t _pin, uint8_t _state);
+    void setStateHigh(int index, ...);
+    void setStateLow(int index, ...);
     void off();
     void on();
 
 public:
-    Keed6ChannelExt();
+    Keed3ChannelExt();
     void init() override;
     void update() override;
     void run(IOExpander **_ioBase, uint8_t _ioNum) override;
@@ -46,11 +48,11 @@ public:
     void changeModes() override;
     void setBaseDelay(uint32_t _time) override;
 
-    void (Keed6ChannelExt::*getSequence(uint8_t index))();
+    void (Keed3ChannelExt::*getSequence(uint8_t index))();
     void taskSequence1();
     void taskSequence2();
+    void taskSequence3();
     void taskSequenceOFF();
-    void taskSequenceON();
 };
 
-#endif // KEED_6_CHANNEL_EXT_H
+#endif // KEED_3_CHANNEL_EXT_H
