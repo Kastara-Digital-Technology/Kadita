@@ -1,24 +1,25 @@
 /*
- *  Keed3ChannelExt.cpp
+ *  Keed3ChannelStrobe.cpp
  *
  *  Kastara Electronics Embedded Development
  *  Created on: 2023. 4. 3
  */
 
-#include "Keed3ChannelExt.h"
+#include "Keed3ChannelStrobe.h"
 
 #define setHigh(...) setStateHigh(__VA_ARGS__, -1)
 #define setLow(...) setStateLow(__VA_ARGS__, -1)
 
-Keed3ChannelExt::Keed3ChannelExt()
+Keed3ChannelStrobe::Keed3ChannelStrobe()
         : sequence(0), ioTimer(40), taskTemp(nullptr),
-          sequences{&Keed3ChannelExt::taskSequenceOFF, &Keed3ChannelExt::taskSequence1,
-                    &Keed3ChannelExt::taskSequence2, &Keed3ChannelExt::taskSequence3} {}
+          sequences{&Keed3ChannelStrobe::taskSequenceOFF, &Keed3ChannelStrobe::taskSequence1,
+                    &Keed3ChannelStrobe::taskSequence2, &Keed3ChannelStrobe::taskSequence3} {}
 
-void Keed3ChannelExt::init() {
+void Keed3ChannelStrobe::init() {
     pinMode(isr.pin, INPUT_PULLUP);
 #if defined(ESP8266)
 #elif defined(ESP32)
+    attachInterrupt(isr.pin, isr.isrCallback, RISING);
 #else
     attachInterrupt(digitalPinToInterrupt(isr.pin), isr.isrCallback, RISING);
 #endif
@@ -26,25 +27,21 @@ void Keed3ChannelExt::init() {
     off();
 }
 
-void Keed3ChannelExt::update() {
+void Keed3ChannelStrobe::update() {
     if (isr.pressed) isr.pressed = false;
     (this->*taskTemp)();
 }
 
-void Keed3ChannelExt::run(IOExpander **_ioBase, uint8_t _ioNum) {
-    update();
-}
-
-void Keed3ChannelExt::run(configuration_t _cfg) {
+void Keed3ChannelStrobe::run(IOExpander **_ioBase, uint8_t _ioNum, configuration_t _cfg) {
     cfg = _cfg;
     update();
 }
 
-void Keed3ChannelExt::setInterruptConfig(interrupt_t _cfg) {
+void Keed3ChannelStrobe::setInterruptConfig(interrupt_t _cfg) {
     isr = _cfg;
 }
 
-void Keed3ChannelExt::changeModes() {
+void Keed3ChannelStrobe::changeModes() {
     if (millis() - isrTimer >= 250) {
         sequence = (sequence < 3) ? sequence + 1 : 0;
         taskTemp = sequences[sequence];
@@ -54,15 +51,15 @@ void Keed3ChannelExt::changeModes() {
     }
 }
 
-void Keed3ChannelExt::setBaseDelay(uint32_t _time) {
+void Keed3ChannelStrobe::setBaseDelay(uint32_t _time) {
     ioTimer = _time;
 }
 
-void (Keed3ChannelExt::*Keed3ChannelExt::getSequence(uint8_t index))() {
+void (Keed3ChannelStrobe::*Keed3ChannelStrobe::getSequence(uint8_t index))() {
     return sequences[index];
 }
 
-void Keed3ChannelExt::taskSequence1() {
+void Keed3ChannelStrobe::taskSequence1() {
     for (int j = 0; j < 2; ++j) {
         for (int i = 0; i < 7; ++i) {
             set(cfg.pin_ptr[1], HIGH);
@@ -89,7 +86,7 @@ void Keed3ChannelExt::taskSequence1() {
     }
 }
 
-void Keed3ChannelExt::taskSequence2() {
+void Keed3ChannelStrobe::taskSequence2() {
     for (int i = 0; i < 2; ++i) {
         snake(ioTimer * 2);
         snakeReverse(ioTimer * 2);
@@ -102,7 +99,7 @@ void Keed3ChannelExt::taskSequence2() {
     }
 }
 
-void Keed3ChannelExt::taskSequence3() {
+void Keed3ChannelStrobe::taskSequence3() {
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 15; ++j) {
             set(cfg.pin_ptr[i], HIGH);
@@ -114,16 +111,16 @@ void Keed3ChannelExt::taskSequence3() {
     }
 }
 
-void Keed3ChannelExt::taskSequenceOFF() {
+void Keed3ChannelStrobe::taskSequenceOFF() {
     off();
 }
 
-void Keed3ChannelExt::sleep(uint32_t _time) {
+void Keed3ChannelStrobe::sleep(uint32_t _time) {
     if (isr.pressed) return;
     delay(_time);
 }
 
-void Keed3ChannelExt::blink(uint32_t _time) {
+void Keed3ChannelStrobe::blink(uint32_t _time) {
     for (int i = 0; i < cfg.pin_size; i++) {
         set(cfg.pin_ptr[i], HIGH);
     }
@@ -134,7 +131,7 @@ void Keed3ChannelExt::blink(uint32_t _time) {
     sleep(_time);
 }
 
-void Keed3ChannelExt::snake(uint32_t _time) {
+void Keed3ChannelStrobe::snake(uint32_t _time) {
     for (int j = 0; j < cfg.pin_size; j++) {
         set(cfg.pin_ptr[j], HIGH);
         sleep(_time);
@@ -145,7 +142,7 @@ void Keed3ChannelExt::snake(uint32_t _time) {
     }
 }
 
-void Keed3ChannelExt::snakeReverse(uint32_t _time) {
+void Keed3ChannelStrobe::snakeReverse(uint32_t _time) {
     for (int j = cfg.pin_size - 1; j >= 0; j--) {
         set(cfg.pin_ptr[j], HIGH);
         sleep(_time);
@@ -156,12 +153,12 @@ void Keed3ChannelExt::snakeReverse(uint32_t _time) {
     }
 }
 
-void Keed3ChannelExt::set(uint8_t _pin, uint8_t _state) {
+void Keed3ChannelStrobe::set(uint8_t _pin, uint8_t _state) {
     if (cfg.reverse) digitalWrite(_pin, !_state);
     else digitalWrite(_pin, _state);
 }
 
-void Keed3ChannelExt::setStateHigh(int index, ...) {
+void Keed3ChannelStrobe::setStateHigh(int index, ...) {
     for (int i = 0; i < cfg.pin_size; i++) {
         set(cfg.pin_ptr[i], LOW);
     }
@@ -175,7 +172,7 @@ void Keed3ChannelExt::setStateHigh(int index, ...) {
     va_end(args);
 }
 
-void Keed3ChannelExt::setStateLow(int index, ...) {
+void Keed3ChannelStrobe::setStateLow(int index, ...) {
     for (int i = 0; i < cfg.pin_size; i++) {
         set(cfg.pin_ptr[i], LOW);
     }
@@ -189,13 +186,13 @@ void Keed3ChannelExt::setStateLow(int index, ...) {
     va_end(args);
 }
 
-void Keed3ChannelExt::off() {
+void Keed3ChannelStrobe::off() {
     for (int i = 0; i < cfg.pin_size; i++) {
         set(cfg.pin_ptr[i], LOW);
     }
 }
 
-void Keed3ChannelExt::on() {
+void Keed3ChannelStrobe::on() {
     for (int i = 0; i < cfg.pin_size; i++) {
         set(cfg.pin_ptr[i], HIGH);
     }
