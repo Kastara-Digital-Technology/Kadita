@@ -8,7 +8,7 @@
 #include "KeedBaseChannel.h"
 
 KeedBaseChannel::KeedBaseChannel(bool _isUsingExpander)
-        : sequence(0), ioTimer(40), taskTemp(nullptr), isUsingExpander(_isUsingExpander),
+        : sequence(0), ioTimer(40), isUsingExpander(_isUsingExpander), taskTemp(nullptr),
           sequences{&KeedBaseChannel::off,
                     &KeedBaseChannel::taskSequence0,
                     &KeedBaseChannel::taskSequence1,
@@ -30,11 +30,20 @@ void KeedBaseChannel::init(IOExpander **_ioBase, configuration_t _cfg) {
     taskTemp = sequences[sequence];
     ioBase = _ioBase;
     cfg = _cfg;
+    if (cfg.display) {
+        display = new KeedDisplay(cfg.channel, 0x3C);
+        display->clear();
+        display->fillBorder();
+    }
 }
 
 void KeedBaseChannel::update() {
     if (isr.pressed) {
         forceOff();
+        if (cfg.display) {
+            display->clear();
+            display->fillBorder();
+        }
         sequence = (sequence < ((TASK_SEQUENCE_NUM + 2) - 1)) ? sequence + 1 : 0;
         taskTemp = sequences[sequence];
         isr.pressed = false;
@@ -81,6 +90,9 @@ void KeedBaseChannel::set(uint8_t _pin, uint8_t _state) {
     } else {
         if (cfg.reverse) digitalWrite(_pin, !_state);
         else digitalWrite(_pin, _state);
+    }
+    if (cfg.display) {
+        display->write(_pin, _state);
     }
 }
 

@@ -23,11 +23,11 @@ KeedAutoLight::~KeedAutoLight() {
 
 cfg_error_t KeedAutoLight::setChannel(configuration_t _cfg) {
     cfg = _cfg;
+    keedBase = getChannel();
+    if (keedBase == nullptr) return INITIALIZE_ERROR;
     if (isUsingExpander()) {
         if (!beginExpander()) return INITIALIZE_ERROR;
     }
-    keedBase = getChannel();
-    if (keedBase == nullptr) return INITIALIZE_ERROR;
     return INITIALIZE_OK;
 }
 
@@ -73,7 +73,8 @@ void KeedAutoLight::addIoExpander(IOExpander *ioExpander) {
 
 bool KeedAutoLight::beginExpander() {
     for (int i = 0; i < cfg.io_size; i++) {
-        addIoExpander(new IOExpander(i2c_address_arr_t[i]));
+        if (!cfg.custom) addIoExpander(new IOExpander(i2c_address_arr_t[i]));
+        else addIoExpander(new IOExpander(cfg.i2c_ptr[i]));
     }
     for (int i = 0; i < ioLen; i++) {
         for (int j = 0; j < IO_EXPANDER_PIN_NUM; j++) {
@@ -93,12 +94,16 @@ KeedBase *KeedAutoLight::getChannel() {
         switch (getIndex()) {
             case AUTO_LIGHT_CUSTOM_0: return new KeedBaseChannel(true);
             case AUTO_LIGHT_CUSTOM_1: return new KeedBaseChannel(true);
-            case AUTO_LIGHT_CUSTOM_2: return new KeedBaseChannel(true);
-            case AUTO_LIGHT_CUSTOM_3: return new KeedBaseChannel(true);
+            case AUTO_LIGHT_CUSTOM_3: {
+                cfg.channel = 16;
+                cfg.io_size = 2;
+                cfg.setAddress(cfg.io_size, 0x24, 0x20);
+                return new KeedBaseChannel(true);
+            }
         }
     } else {
-        switch (cfg.pin_size) {
-            case 3: return new Keed3ChannelStrobe();
+        switch (getIndex()) {
+            case AUTO_LIGHT_CUSTOM_2: return new Keed3ChannelStrobe();
         }
     }
     return nullptr;
@@ -136,6 +141,11 @@ KeedBase &KeedAutoLight::getChannelClass() {
 }
 
 void KeedAutoLight::showInfo() {
+    Serial.print("| SERIAL-KEY: ");
+    Serial.print(readMEM(0));
+    Serial.print("| INDEX: ");
+    Serial.print(getIndex());
+    Serial.println();
     Serial.print("| version: ");
     Serial.print(cfg.version);
     Serial.print("| channel: ");
@@ -161,7 +171,11 @@ const byte *strconv(String input) {
 
 bool strchx(const byte *a, const byte *b) {
     for (int i = 0; i < 20; i++) {
+#if defined(ESP32)
         if (a[i] != b[i]) return false;
+#else
+        if (a[i] != pgm_read_byte(&(b[i]))) return false;
+#endif
     }
     return true;
 }
