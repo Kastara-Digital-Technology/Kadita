@@ -21,8 +21,10 @@ private:
 
     void addIoExpander(IOExpander *ioExpander);
     bool beginExpander();
-    KeedBase *switchChannel();
+    KeedBase *getChannel();
+    int getIndex();
     bool isUsingExpander() const;
+
 public:
     KeedAutoLight();
     ~KeedAutoLight();

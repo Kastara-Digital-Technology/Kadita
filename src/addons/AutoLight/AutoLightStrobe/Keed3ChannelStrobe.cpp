@@ -12,10 +12,12 @@
 
 Keed3ChannelStrobe::Keed3ChannelStrobe()
         : sequence(0), ioTimer(40), taskTemp(nullptr),
-          sequences{&Keed3ChannelStrobe::taskSequenceOFF, &Keed3ChannelStrobe::taskSequence1,
-                    &Keed3ChannelStrobe::taskSequence2, &Keed3ChannelStrobe::taskSequence3} {}
+          sequences{&Keed3ChannelStrobe::taskSequenceOFF,
+                    &Keed3ChannelStrobe::taskSequence1,
+                    &Keed3ChannelStrobe::taskSequence2,
+                    &Keed3ChannelStrobe::taskSequence3} {}
 
-void Keed3ChannelStrobe::init() {
+void Keed3ChannelStrobe::init(IOExpander **_ioBase, configuration_t _cfg) {
     pinMode(isr.pin, INPUT_PULLUP);
 #if defined(ESP8266)
 #elif defined(ESP32)
@@ -24,6 +26,7 @@ void Keed3ChannelStrobe::init() {
     attachInterrupt(digitalPinToInterrupt(isr.pin), isr.isrCallback, RISING);
 #endif
     taskTemp = sequences[sequence];
+    cfg = _cfg;
     off();
 }
 
@@ -32,8 +35,7 @@ void Keed3ChannelStrobe::update() {
     (this->*taskTemp)();
 }
 
-void Keed3ChannelStrobe::run(IOExpander **_ioBase, uint8_t _ioNum, configuration_t _cfg) {
-    cfg = _cfg;
+void Keed3ChannelStrobe::run() {
     update();
 }
 
@@ -197,4 +199,3 @@ void Keed3ChannelStrobe::on() {
         set(cfg.pin_ptr[i], HIGH);
     }
 }
-

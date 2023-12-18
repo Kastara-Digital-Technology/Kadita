@@ -12,6 +12,10 @@ KeedConfiguration::KeedConfiguration(bool _debug)
 }
 
 cfg_error_t KeedConfiguration::initialize(void (*init_callback)(void)) {
+#if defined(ESP32)
+    if (!EEPROM.begin(4095)) return INITIALIZE_ERROR;
+#else
+#endif
     if (init_callback != nullptr) init_callback();
     return INITIALIZE_OK;
 }
@@ -29,7 +33,6 @@ cfg_error_t KeedConfiguration::readChannel() {
         for (int i = 0; i < TOTAL_VERSION_NUM; i++) {
             if (bin_value == version_address_t[i]) {
                 cfg.channel = version_channel_t[i];
-                return CHANNEL_NUM_OK;
             }
         }
         cfg.io_size = 0;
@@ -43,9 +46,11 @@ cfg_error_t KeedConfiguration::readChannel() {
             pinMode(cfg.pin_ptr[i], OUTPUT);
             digitalWrite(cfg.pin_ptr[i], HIGH);
         }
-        return CHANNEL_NUM_OK;
     }
-    return CHANNEL_NUM_ERROR;
+    if (cfg.channel == 0 && cfg.pin_ptr == nullptr) {
+        return CHANNEL_NUM_ERROR;
+    }
+    return CHANNEL_NUM_OK;
 }
 
 cfg_error_t KeedConfiguration::readVersion() {

@@ -13,13 +13,19 @@
 #include "modules/communication/wired/i2c/io-expander.h"
 #include "KeedDef.h"
 
+#if defined(ESP32)
+#include "EEPROM.h"
+#else
+#endif
+
 struct configuration_t {
     uint8_t version = 0;
     uint8_t channel = 0;
     uint8_t io_size = 0;
-    uint8_t *pin_ptr = nullptr;
-    uint8_t pin_size = 0;
+    bool custom = false;
     bool reverse = false;
+    uint8_t pin_size = 0;
+    uint8_t *pin_ptr = nullptr;
     void setPins(int size, ...);
 };
 

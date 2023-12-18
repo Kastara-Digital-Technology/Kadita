@@ -7,6 +7,9 @@
 
 #include "KeedAutoLight.h"
 
+const byte *strconv(String input);
+bool strchx(const byte *a, const byte *b);
+
 KeedAutoLight::KeedAutoLight()
         : ioBase(nullptr),
           keedBase(nullptr) {}
@@ -23,20 +26,27 @@ cfg_error_t KeedAutoLight::setChannel(configuration_t _cfg) {
     if (isUsingExpander()) {
         if (!beginExpander()) return INITIALIZE_ERROR;
     }
-    keedBase = switchChannel();
+    keedBase = getChannel();
     if (keedBase == nullptr) return INITIALIZE_ERROR;
     return INITIALIZE_OK;
 }
 
 cfg_error_t KeedAutoLight::init() {
     if (keedBase == nullptr) return INITIALIZE_ERROR;
-    keedBase->init();
+    if (isUsingExpander()) {
+        cfg.pin_size = cfg.channel;
+        cfg.pin_ptr = new uint8_t[cfg.pin_size];
+        for (uint8_t i = 0; i < cfg.pin_size; ++i) {
+            cfg.pin_ptr[i] = i;
+        }
+    }
+    keedBase->init(ioBase, cfg);
     return INITIALIZE_OK;
 }
 
 void KeedAutoLight::runAutoLight() {
     if (keedBase == nullptr) return;
-    keedBase->run(ioBase, cfg.io_size, cfg);
+    keedBase->run();
 }
 
 void KeedAutoLight::setInterruptConfig(interrupt_t _cfg) {
@@ -77,37 +87,33 @@ bool KeedAutoLight::beginExpander() {
     return true;
 }
 
-KeedBase *KeedAutoLight::switchChannel() {
+KeedBase *KeedAutoLight::getChannel() {
+    if (!cfg.custom) return new KeedBaseChannel(isUsingExpander());
     if (isUsingExpander()) {
-        switch (cfg.channel) {
-            case 3: return nullptr;
-            case 4: return nullptr;
-            case 6: return nullptr;
-            case 8: return nullptr;
-            case 10: return nullptr;
-            case 12: return nullptr;
-            case 14: return nullptr;
-            case 16: return new Keed16Channel();
-            case 20: return nullptr;
-            case 24: return nullptr;
-            case 32: return nullptr;
+        switch (getIndex()) {
+            case AUTO_LIGHT_CUSTOM_0: return nullptr;
+            case AUTO_LIGHT_CUSTOM_1: return nullptr;
+            case AUTO_LIGHT_CUSTOM_2: return nullptr;
+            case AUTO_LIGHT_CUSTOM_3: return nullptr;
         }
     } else {
         switch (cfg.pin_size) {
             case 3: return new Keed3ChannelStrobe();
-            case 4: return nullptr;
-            case 6: return new Keed6ChannelExt();
-            case 8: return nullptr;
-            case 10: return nullptr;
-            case 12: return nullptr;
-            case 14: return new Keed14ChannelExt();
-            case 16: return new Keed16ChannelExt();
-            case 20: return nullptr;
-            case 24: return nullptr;
-            case 32: return nullptr;
         }
     }
     return nullptr;
+}
+
+int KeedAutoLight::getIndex() {
+    for (int i = AUTO_LIGHT_CUSTOM_0; i < AUTO_LIGHT_CUSTOM_NUM; ++i) {
+#if defined(ESP32)
+        if (strchx(strconv(EEPROM.readString(0)), custom_keed_t[i])) {
+            return i;
+        }
+#else
+#endif
+    }
+    return -1;
 }
 
 bool KeedAutoLight::isUsingExpander() const {
@@ -148,4 +154,19 @@ void KeedAutoLight::showInfo() {
     Serial.print("| pin_size: ");
     Serial.print(cfg.pin_size);
     Serial.println();
+}
+
+const byte *strconv(String input) {
+    static byte hexArray[CUSTOM_LEN];
+    for (int i = 0; i < input.length(); i++) {
+        hexArray[i] = input[i];
+    }
+    return hexArray;
+}
+
+bool strchx(const byte *a, const byte *b) {
+    for (int i = 0; i < 20; i++) {
+        if (a[i] != b[i]) return false;
+    }
+    return true;
 }
