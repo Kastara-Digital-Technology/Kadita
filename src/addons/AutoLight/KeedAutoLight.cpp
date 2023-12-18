@@ -91,10 +91,10 @@ KeedBase *KeedAutoLight::getChannel() {
     if (!cfg.custom) return new KeedBaseChannel(isUsingExpander());
     if (isUsingExpander()) {
         switch (getIndex()) {
-            case AUTO_LIGHT_CUSTOM_0: return nullptr;
-            case AUTO_LIGHT_CUSTOM_1: return nullptr;
-            case AUTO_LIGHT_CUSTOM_2: return nullptr;
-            case AUTO_LIGHT_CUSTOM_3: return nullptr;
+            case AUTO_LIGHT_CUSTOM_0: return new KeedBaseChannel(true);
+            case AUTO_LIGHT_CUSTOM_1: return new KeedBaseChannel(true);
+            case AUTO_LIGHT_CUSTOM_2: return new KeedBaseChannel(true);
+            case AUTO_LIGHT_CUSTOM_3: return new KeedBaseChannel(true);
         }
     } else {
         switch (cfg.pin_size) {
@@ -106,12 +106,7 @@ KeedBase *KeedAutoLight::getChannel() {
 
 int KeedAutoLight::getIndex() {
     for (int i = AUTO_LIGHT_CUSTOM_0; i < AUTO_LIGHT_CUSTOM_NUM; ++i) {
-#if defined(ESP32)
-        if (strchx(strconv(EEPROM.readString(0)), custom_keed_t[i])) {
-            return i;
-        }
-#else
-#endif
+        if (strchx(strconv(readMEM(0)), custom_keed_t[i])) return i;
     }
     return -1;
 }
@@ -157,11 +152,11 @@ void KeedAutoLight::showInfo() {
 }
 
 const byte *strconv(String input) {
-    static byte hexArray[CUSTOM_LEN];
+    static byte hex_arr[CUSTOM_LEN];
     for (int i = 0; i < input.length(); i++) {
-        hexArray[i] = input[i];
+        hex_arr[i] = input[i];
     }
-    return hexArray;
+    return hex_arr;
 }
 
 bool strchx(const byte *a, const byte *b) {
