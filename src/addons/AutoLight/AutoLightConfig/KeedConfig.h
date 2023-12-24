@@ -19,11 +19,12 @@
 #include "EEPROM.h"
 
 struct configuration_t {
+    volatile uint8_t sequence;
+    volatile uint32_t delay_time;
     uint8_t version;
     uint8_t channel;
     uint8_t io_size;
     uint8_t pin_size;
-    uint8_t sequence;
     uint8_t *pin_ptr;
     uint8_t *i2c_ptr;
     bool custom;
@@ -32,6 +33,7 @@ struct configuration_t {
     configuration_t();
     void setPins(int size, ...);
     void setAddress(int size, ...);
+    void setDelay(uint32_t _time);
 };
 
 class KeedConfiguration {
@@ -47,6 +49,7 @@ public:
     cfg_error_t readVersion();
 
     void setConfig(configuration_t _cfg);
+    configuration_t getConfig();
     bool isUsingExpander() const;
     bool isInitialize() const;
     configuration_t getConfig() const;

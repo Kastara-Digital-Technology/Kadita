@@ -8,7 +8,7 @@
 #include "KeedBaseChannel.h"
 
 KeedBaseChannel::KeedBaseChannel(bool _isUsingExpander)
-        : sequenceMode(0), ioTimer(40), isUsingExpander(_isUsingExpander), taskTemp(nullptr),
+        : isUsingExpander(_isUsingExpander), taskTemp(nullptr),
           totalMode{&KeedBaseChannel::off,
                     &KeedBaseChannel::taskSequence0,
                     &KeedBaseChannel::taskSequence1,
@@ -29,8 +29,8 @@ void KeedBaseChannel::init(IOExpander **_ioBase, configuration_t _cfg) {
 #endif
     ioBase = _ioBase;
     cfg = _cfg;
-    sequenceMode = cfg.sequence;
-    taskTemp = totalMode[sequenceMode];
+//    sequenceMode = cfg.sequence;
+    taskTemp = totalMode[cfg.sequence];
 
     if (cfg.display) {
         display = new KeedDisplay(cfg.channel, 0x3C);
@@ -40,16 +40,21 @@ void KeedBaseChannel::init(IOExpander **_ioBase, configuration_t _cfg) {
 }
 
 void KeedBaseChannel::update() {
-    if (isr.pressed) {
+    if (isr.pressed || isr.changed) {
         forceOff();
         if (cfg.display) {
             display->clear();
             display->fillBorder();
         }
-        sequenceMode = (sequenceMode < ((TASK_SEQUENCE_NUM + 2) - 1)) ? sequenceMode + 1 : 0;
-        taskTemp = totalMode[sequenceMode];
+        if (isr.pressed) cfg.sequence = (cfg.sequence < ((TASK_SEQUENCE_NUM + 2) - 1)) ? cfg.sequence + 1 : 0;
+        taskTemp = totalMode[cfg.sequence];
+
+        writeMEM(25, String(cfg.sequence));
+        writeMEM(30, String(cfg.delay_time));
+        writeMEM(50, "1");
 
         isr.pressed = false;
+        isr.changed = false;
     }
     (this->*taskTemp)();
 }
@@ -62,6 +67,10 @@ void KeedBaseChannel::setInterruptConfig(interrupt_t _cfg) {
     isr = _cfg;
 }
 
+interrupt_t KeedBaseChannel::getInterruptConfig() {
+    return isr;
+}
+
 void KeedBaseChannel::changeModes() {
     if (millis() - isrTimer >= BUTTON_DEBOUNCE_TIME) {
         isr.num++;
@@ -70,26 +79,36 @@ void KeedBaseChannel::changeModes() {
     }
 }
 
+void KeedBaseChannel::readModes() {
+    int bufferDelay = readMEM(30).toInt();
+    int bufferSequence = readMEM(25).toInt();
+    if (isr.pressed || isr.changed) return;
+    if (bufferDelay != cfg.delay_time || bufferSequence != cfg.sequence) {
+        cfg.delay_time = bufferDelay;
+        cfg.sequence = bufferSequence;
+        isr.changed = true;
+    }
+}
+
 void KeedBaseChannel::setBaseDelay(uint32_t _time) {
-    ioTimer = _time;
+    cfg.delay_time = _time;
 }
 
 uint8_t KeedBaseChannel::getSequenceIndex() {
-    return sequenceMode;
+    return cfg.sequence;
 }
 
 void (KeedBaseChannel::*KeedBaseChannel::getSequence(uint8_t index))() {
     return totalMode[index];
 }
 
-
 void KeedBaseChannel::sleep(uint32_t _time) {
-    if (isr.pressed) return;
+    if (isr.pressed || isr.changed) return;
     delay(_time);
 }
 
 void KeedBaseChannel::set(uint8_t _pin, uint8_t _state) {
-    if (isr.pressed) return;
+    if (isr.pressed || isr.changed) return;
     if (isUsingExpander) {
         int index = ceil((_pin + 1) / 8.0) - 1;
         int pins_mod = _pin % 8;
