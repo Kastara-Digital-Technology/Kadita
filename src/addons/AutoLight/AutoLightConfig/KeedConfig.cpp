@@ -8,12 +8,13 @@
 #include "KeedConfig.h"
 
 KeedConfiguration::KeedConfiguration(bool _debug)
-        : debug(_debug) {
+        : debug(_debug), is_initialize(false) {
 }
 
 cfg_error_t KeedConfiguration::initialize(void (*init_callback)(void)) {
 #if defined(ESP32)
     if (!EEPROM.begin(4095)) return INITIALIZE_ERROR;
+    is_initialize = true;
 #else
 #endif
     if (init_callback != nullptr) init_callback();
@@ -79,56 +80,31 @@ bool KeedConfiguration::isUsingExpander() const {
     return cfg.pin_ptr == nullptr && cfg.pin_size == 0;
 }
 
+bool KeedConfiguration::isInitialize() const {
+    return is_initialize;
+}
+
 configuration_t KeedConfiguration::getConfig() const {
     return cfg;
 }
 
-void configuration_t::setPins(int _pin_size, ...) {
-    va_list args;
-    va_start(args, _pin_size);
-    pin_size = _pin_size;
-    pin_ptr = new uint8_t[_pin_size];
-    for (int i = 0; i < _pin_size; i++) {
-        pin_ptr[i] = static_cast<uint8_t>(va_arg(args, int));
-    }
-    va_end(args);
-}
-
-void configuration_t::setAddress(int _io_size, ...) {
-    va_list args;
-    va_start(args, _io_size);
-    i2c_ptr = new uint8_t[_io_size];
-    for (int i = 0; i < _io_size; i++) {
-        i2c_ptr[i] = static_cast<uint8_t>(va_arg(args, int));
-    }
-    va_end(args);
-}
-
 #if defined(ESP32)
-#else
-void writeMEM(int addrOffset, const String &strToWrite) {
-    byte len = strToWrite.length();
-    EEPROM.write(addrOffset, len);
-    for (int i = 0; i < len; i++) {
-        EEPROM.write(addrOffset + 1 + i, strToWrite[i]);
-    }
+
+KeedCore::KeedCore()
+        : index(0), stack_depth(10000) {}
+
+void KeedCore::createCore(uint8_t _core_index, void (*core_callback)(void *pvParameter)) {
+    char task_name[20];
+    snprintf(task_name, sizeof(task_name), "task%d", index);
+    xTaskCreatePinnedToCore(
+            core_callback,
+            task_name,
+            stack_depth,
+            nullptr,
+            1,
+            new TaskHandle_t,
+            _core_index);
+    index++;
 }
 
-String readMEM(int addrOffset) {
-    int newStrLen = EEPROM.read(addrOffset);
-    char data[newStrLen + 1];
-    for (int i = 0; i < newStrLen; i++) {
-        data[i] = EEPROM.read(addrOffset + 1 + i);
-    }
-    data[newStrLen] = '\0';
-    return String(data);
-}
-
-String memstr(const byte* byteArray, size_t size) {
-  String result = "";
-  for (size_t i = 0; i < size; i++) {
-    result += String(byteArray[i], HEX);
-  }
-  return result;
-}
 #endif
